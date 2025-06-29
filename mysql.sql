@@ -28,3 +28,10 @@ CREATE TABLE my_database.comments (
     comment TEXT NOT NULL,
     created_at TIMESTAMP,
 );
+
+
+CREATE TABLE my_database.table2 (
+  id INT PRIMARY KEY,
+  column1 VARCHAR(255),
+  column2 BINARY(255)
+);
