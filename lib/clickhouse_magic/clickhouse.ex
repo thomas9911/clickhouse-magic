@@ -49,6 +49,28 @@ defmodule ClickhouseMagic.ClickHouse do
     Enum.map(inserts, &query/1)
   end
 
+  def migrate_mysql_to_postgres_without_tables do
+    {:ok, mysql_tables} = ClickhouseMagic.MySql.get_tables()
+    {:ok, postgres_tables} = ClickhouseMagic.Postgres.get_tables()
+
+    true = Enum.sort(mysql_tables) == Enum.sort(postgres_tables)
+
+    inserts =
+      mysql_tables
+      |> Enum.sort()
+      |> Enum.map(fn table_name ->
+        mysql_statement = format_mysql_statement(table_name)
+        postgres_statement = format_postgres_statement(table_name)
+
+        """
+        insert into TABLE FUNCTION #{postgres_statement} select * from #{mysql_statement};
+        """
+        |> IO.inspect()
+      end)
+
+    Enum.map(inserts, &query/1)
+  end
+
   defp append_engine_mysql({table_name, table_create}) do
     mysql_location = "mysql:3306"
     mysql_database = Application.fetch_env!(:clickhouse_magic, :mysql_database)
@@ -75,5 +97,23 @@ defmodule ClickhouseMagic.ClickHouse do
     """
 
     table_create <> engine_settings
+  end
+
+  defp format_mysql_statement(table) do
+    mysql_location = "mysql:3306"
+    mysql_database = Application.fetch_env!(:clickhouse_magic, :mysql_database)
+    mysql_user = Application.fetch_env!(:clickhouse_magic, :mysql_user)
+    mysql_password = Application.fetch_env!(:clickhouse_magic, :mysql_password)
+
+    "mysql('#{mysql_location}', '#{mysql_database}', '#{table}', '#{mysql_user}', '#{mysql_password}')"
+  end
+
+  defp format_postgres_statement(table) do
+    postgres_location = "postgres:5432"
+    postgres_db = Application.fetch_env!(:clickhouse_magic, :postgres_db)
+    postgres_user = Application.fetch_env!(:clickhouse_magic, :postgres_user)
+    postgres_password = Application.fetch_env!(:clickhouse_magic, :postgres_password)
+
+    "postgresql('#{postgres_location}', '#{postgres_db}', '#{table}', '#{postgres_user}', '#{postgres_password}')"
   end
 end

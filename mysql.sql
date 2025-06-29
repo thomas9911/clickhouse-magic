@@ -1,7 +1,6 @@
 CREATE TABLE my_database.table1 (
-  id INT,
+  id INT PRIMARY KEY,
   column1 VARCHAR(255)
-  PRIMARY KEY (id)
 );
 
 CREATE TABLE my_database.users (
@@ -12,6 +11,7 @@ CREATE TABLE my_database.users (
     created_at TIMESTAMP
 );
 
+-- Posts table
 CREATE TABLE my_database.posts (
     id BINARY(16) PRIMARY KEY,
     user_id BINARY(16) NOT NULL,
@@ -20,10 +20,11 @@ CREATE TABLE my_database.posts (
     created_at TIMESTAMP
 );
 
+-- Comments table
 CREATE TABLE my_database.comments (
     id BINARY(16) PRIMARY KEY,
     post_id BINARY(16) NOT NULL,
     user_id BINARY(16) NOT NULL,
     comment TEXT NOT NULL,
-    created_at TIMESTAMP
+    created_at TIMESTAMP,
 );
