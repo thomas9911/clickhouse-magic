@@ -9,7 +9,8 @@ defmodule Mix.Tasks.MigrateClickhouse do
     Application.ensure_all_started(:clickhouse_magic)
     Mix.Tasks.App.Config.run([])
 
-    clickhouse_connection_string = Application.fetch_env!(:clickhouse_magic, :clickhouse_connection_string)
+    clickhouse_connection_string =
+      Application.fetch_env!(:clickhouse_magic, :clickhouse_connection_string)
 
     # Get connection details from your application config
     conn = Pillar.Connection.new(clickhouse_connection_string)

@@ -4,7 +4,7 @@ defmodule ClickhouseMagic.Application do
   def start(_type, _args) do
     children = [] ++ db_pools(Application.get_env(:clickhouse_magic, :start_db_pools, false))
 
-    Supervisor.start_link(children, [strategy: :one_for_one])
+    Supervisor.start_link(children, strategy: :one_for_one)
   end
 
   defp db_pools(true) do
